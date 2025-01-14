@@ -1,0 +1,25 @@
+name: Update PR Description
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  update-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Modify PR description
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY="# Esta é a descrição modificada automaticamente do PR. Favor verificar!"
+
+          # Usa a API do GitHub para atualizar a descrição do PR
+          curl -X PATCH \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"body": "'"${PR_BODY}"'"}' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
